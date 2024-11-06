@@ -1,4 +1,4 @@
-name: Publish Package and Create Release
+name: Build, Package and Release
 
 on:
   push:
@@ -7,25 +7,39 @@ on:
     paths-ignore:
       - '**.md'
       - '.gitignore'
-    # tags:
-    #   - 'v*'
 
 jobs:
-  build-and-publish:
+  build-and-release:
     runs-on: ubuntu-latest
     permissions:
       packages: write
-      contents: write # Required for creating releases
+      contents: write
     
     steps:
     - uses: actions/checkout@v3
       with:
-        fetch-depth: 0 # Required for getting commit history and release notes
+        fetch-depth: 0
     
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
+
+    # Generate version number based on date and commit hash
+    - name: Generate Version Number
+      id: version
+      run: |
+        DATE_VERSION=$(date +'%Y.%m.%d')
+        SHORT_SHA=$(git rev-parse --short HEAD)
+        COUNTER=$(git rev-list --count HEAD)
+        VERSION="${DATE_VERSION}.${COUNTER}"
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "BUILD_VERSION=${VERSION}+${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+    # Update project version
+    - name: Update Project Version
+      run: |
+        sed -i "s/<Version>.*<\/Version>/<Version>${{ steps.version.outputs.BUILD_VERSION }}<\/Version>/" ./**/*.csproj
 
     - name: Setup NuGet
       run: |
@@ -46,30 +60,33 @@ jobs:
     - name: Push to GitHub Packages
       run: dotnet nuget push "./nupkgs/*.nupkg" --source "github" --skip-duplicate --api-key ${{ secrets.GITHUB_TOKEN }}
 
-    # Extract version from tag
-    - name: Get Version
-      id: get_version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-    # Generate changelog
+    # Generate changelog since last release
     - name: Generate Changelog
       id: changelog
       run: |
-        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-        if [ -z "$PREVIOUS_TAG" ]; then
-          # If this is the first tag, get all commits
-          echo "CHANGELOG=$(git log --pretty=format:"* %s (%h)" --reverse)" >> $GITHUB_OUTPUT
+        LATEST_RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name || echo "")
+        if [ -z "$LATEST_RELEASE" ] || [ "$LATEST_RELEASE" = "null" ]; then
+          # If no previous release exists, get all commits
+          CHANGELOG=$(git log --pretty=format:"* %s (%h)" --reverse)
         else
-          # Get commits since last tag
-          echo "CHANGELOG=$(git log --pretty=format:"* %s (%h)" --reverse $PREVIOUS_TAG..HEAD)" >> $GITHUB_OUTPUT
+          # Get commits since last release
+          CHANGELOG=$(git log --pretty=format:"* %s (%h)" --reverse $LATEST_RELEASE..HEAD)
         fi
+        echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
 
     # Create GitHub Release
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        name: Release ${{ steps.get_version.outputs.VERSION }}
+        tag_name: v${{ steps.version.outputs.VERSION }}
+        name: Release v${{ steps.version.outputs.VERSION }}
         body: |
+          ## Automatic Release v${{ steps.version.outputs.VERSION }}
+          
+          Build Version: ${{ steps.version.outputs.BUILD_VERSION }}
+          
           ## What's Changed
           ${{ steps.changelog.outputs.CHANGELOG }}
           
@@ -86,8 +103,9 @@ jobs:
           
           Then install using:
           ```bash
-          dotnet add package ${{ github.event.repository.name }} --version ${{ steps.get_version.outputs.VERSION }}
+          dotnet add package ${{ github.event.repository.name }} --version ${{ steps.version.outputs.BUILD_VERSION }}
           ```
         files: ./nupkgs/*.nupkg
         draft: false
         prerelease: false
+        generate_release_notes: true
