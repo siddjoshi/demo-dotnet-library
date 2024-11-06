@@ -2,6 +2,6 @@ public class Class1
 {
     public string SayHello()
     {
-        return "Hello, World!";
+        return "Hello, World again!";
     }
 }
