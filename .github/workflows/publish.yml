@@ -1,0 +1,33 @@
+name: Publish NuGet Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '7.0.x'
+          source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore dependencies
+        run: dotnet restore ./src/MyLibrary/MyLibrary.csproj
+
+      - name: Build
+        run: dotnet build --configuration Release ./src/MyLibrary/MyLibrary.csproj
+
+      - name: Pack
+        run: dotnet pack ./src/MyLibrary/MyLibrary.csproj --configuration Release --output ./output
+
+      - name: Push to GitHub Packages
+        run: dotnet nuget push "./output/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
