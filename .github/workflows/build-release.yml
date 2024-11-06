@@ -3,7 +3,7 @@ name: Build, Package and Release
 on:
   push:
     branches:
-      - main # or master, depending on your default branch
+      - main
     paths-ignore:
       - '**.md'
       - '.gitignore'
@@ -36,10 +36,14 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         echo "BUILD_VERSION=${VERSION}+${SHORT_SHA}" >> $GITHUB_OUTPUT
 
-    # Update project version
+    # Update project version - Fixed version
     - name: Update Project Version
+      shell: bash
       run: |
-        sed -i "s/<Version>.*<\/Version>/<Version>${{ steps.version.outputs.BUILD_VERSION }}<\/Version>/" ./**/*.csproj
+        for f in $(find . -name "*.csproj"); do
+          echo "Updating version in $f"
+          sed -i "s|<Version>.*</Version>|<Version>${{ steps.version.outputs.BUILD_VERSION }}</Version>|" "$f"
+        done
 
     - name: Setup NuGet
       run: |
