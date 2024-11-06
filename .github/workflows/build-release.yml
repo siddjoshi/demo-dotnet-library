@@ -1,0 +1,88 @@
+name: Publish Package and Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write # Required for creating releases
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Required for getting commit history and release notes
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Setup NuGet
+      run: |
+        dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+    
+    - name: Pack
+      run: dotnet pack --configuration Release --no-build --output nupkgs
+    
+    - name: Push to GitHub Packages
+      run: dotnet nuget push "./nupkgs/*.nupkg" --source "github" --skip-duplicate --api-key ${{ secrets.GITHUB_TOKEN }}
+
+    # Extract version from tag
+    - name: Get Version
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+    # Generate changelog
+    - name: Generate Changelog
+      id: changelog
+      run: |
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        if [ -z "$PREVIOUS_TAG" ]; then
+          # If this is the first tag, get all commits
+          echo "CHANGELOG=$(git log --pretty=format:"* %s (%h)" --reverse)" >> $GITHUB_OUTPUT
+        else
+          # Get commits since last tag
+          echo "CHANGELOG=$(git log --pretty=format:"* %s (%h)" --reverse $PREVIOUS_TAG..HEAD)" >> $GITHUB_OUTPUT
+        fi
+
+    # Create GitHub Release
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## What's Changed
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          
+          ## Installation
+          To install this package, add this to your `nuget.config`:
+          ```xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+              <packageSources>
+                  <add key="github" value="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" />
+              </packageSources>
+          </configuration>
+          ```
+          
+          Then install using:
+          ```bash
+          dotnet add package ${{ github.event.repository.name }} --version ${{ steps.get_version.outputs.VERSION }}
+          ```
+        files: ./nupkgs/*.nupkg
+        draft: false
+        prerelease: false
