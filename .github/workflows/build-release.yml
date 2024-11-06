@@ -2,8 +2,13 @@ name: Publish Package and Create Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main # or master, depending on your default branch
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+    # tags:
+    #   - 'v*'
 
 jobs:
   build-and-publish:
