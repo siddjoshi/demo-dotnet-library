@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>MyLibrary</id>
+    <version>1.0.0</version>
+    <authors>Your Name</authors>
+    <description>Sample library package</description>
+    <repository type="git" commit="ffb918a7e0266f1cfdc3ea21d69caff962412ae2" />
+    <dependencies>
+      <group targetFramework="net7.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\bin\Debug\net7.0\WeatherUtils.dll" target="lib\net7.0\WeatherUtils.dll" />
+  </files>
+</package>

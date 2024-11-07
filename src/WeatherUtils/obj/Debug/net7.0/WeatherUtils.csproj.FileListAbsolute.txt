@@ -1,0 +1,13 @@
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\bin\Debug\net7.0\WeatherUtils.deps.json
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\bin\Debug\net7.0\WeatherUtils.dll
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\bin\Debug\net7.0\WeatherUtils.pdb
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\WeatherUtils.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\WeatherUtils.AssemblyInfoInputs.cache
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\WeatherUtils.AssemblyInfo.cs
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\WeatherUtils.csproj.CoreCompileInputs.cache
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\WeatherUtils.sourcelink.json
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\WeatherUtils.dll
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\refint\WeatherUtils.dll
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\WeatherUtils.pdb
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\ref\WeatherUtils.dll
+C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\obj\Debug\net7.0\WeatherUtils.csproj.AssemblyReference.cache

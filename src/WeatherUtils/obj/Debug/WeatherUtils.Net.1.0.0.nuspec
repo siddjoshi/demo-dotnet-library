@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>WeatherUtils.Net</id>
+    <version>1.0.0</version>
+    <authors>Siddharth Joshi</authors>
+    <description>A .NET library for fetching weather data including current conditions, forecasts, and location search using OpenWeatherMap API. Provides easy-to-use services for temperature, humidity, wind, and other weather metrics.</description>
+    <tags>weather openweathermap forecast temperature climate api</tags>
+    <repository type="git" commit="ffb918a7e0266f1cfdc3ea21d69caff962412ae2" />
+    <dependencies>
+      <group targetFramework="net7.0">
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Http.Polly" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="7.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\siddhajoshi\OneDrive - Microsoft\demos\C-Sharp-class\demo-dotnet-library\src\WeatherUtils\bin\Debug\net7.0\WeatherUtils.dll" target="lib\net7.0\WeatherUtils.dll" />
+  </files>
+</package>
